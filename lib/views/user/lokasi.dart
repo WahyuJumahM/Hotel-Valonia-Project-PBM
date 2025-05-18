@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 
 class LokasiPage extends StatefulWidget {
   const LokasiPage({super.key});
@@ -8,92 +11,132 @@ class LokasiPage extends StatefulWidget {
 }
 
 class _LokasiPageState extends State<LokasiPage> {
-  String? lokasiAwal;
+  LatLng? lokasiAwal;
+  final LatLng lokasiTujuan = const LatLng(-8.17063, 113.72686);
+  final MapController _mapController = MapController();
+  String errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        setState(() {
+          errorMessage = 'Layanan lokasi tidak aktif.';
+        });
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          setState(() {
+            errorMessage = 'Izin lokasi ditolak.';
+          });
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        setState(() {
+          errorMessage = 'Izin lokasi ditolak permanen.';
+        });
+        return;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      setState(() {
+        lokasiAwal = LatLng(position.latitude, position.longitude);
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pilih Lokasi'),
+        title: const Text('Lokasi Saya'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.my_location),
+            onPressed: () {
+              _getCurrentLocation();
+              if (lokasiAwal != null) {
+                _mapController.move(lokasiAwal!, 15);
+              }
+            },
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            const SizedBox(height: 24),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Lokasi Awal Anda',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              onChanged: (value) {
-                setState(() {
-                  lokasiAwal = value;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: 'Masukkan lokasi Anda',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+      body: errorMessage.isNotEmpty
+          ? Center(child: Text(errorMessage))
+          : lokasiAwal == null
+              ? const Center(child: CircularProgressIndicator())
+              : FlutterMap(
+                  mapController: _mapController,
+                  options: MapOptions(
+                    initialCenter: lokasiAwal!,
+                    initialZoom: 15.0,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                      subdomains: const ['a', 'b', 'c'],
+                    ),
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          point: lokasiAwal!,
+                          width: 80,
+                          height: 80,
+                          child: const Icon(
+                            Icons.my_location,
+                            color: Colors.blue,
+                            size: 40,
+                          ),
+                        ),
+                        Marker(
+                          point: lokasiTujuan,
+                          width: 80,
+                          height: 80,
+                          child: const Icon(
+                            Icons.location_on,
+                            color: Colors.red,
+                            size: 40,
+                          ),
+                        ),
+                      ],
+                    ),
+                    PolylineLayer(
+                      polylines: [
+                        Polyline(
+                          points: [
+                            lokasiAwal!,
+                            lokasiTujuan,
+                          ],
+                          color: Colors.blueAccent,
+                          strokeWidth: 4.0,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
-            ),
-            const SizedBox(height: 32),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Lokasi Tujuan',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              enabled: false,
-              decoration: InputDecoration(
-                hintText: 'Hotel Besar',
-                filled: true,
-                fillColor: Colors.grey[200],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () {
-                if (lokasiAwal != null && lokasiAwal!.isNotEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Rute sedang diproses...')),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Masukkan lokasi awal Anda')),
-                  );
-                }
-              },
-              icon: const Icon(Icons.navigation),
-              label: const Text('Cari Rute'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 14,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

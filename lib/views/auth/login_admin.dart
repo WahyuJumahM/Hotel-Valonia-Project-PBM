@@ -97,7 +97,7 @@ class _LoginAdminPageState extends State<LoginAdminPage> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () {
-                          // TODO: Login Admin logic
+                          Navigator.pushReplacementNamed(context, '/homepage_admin');
                         },
                         child: Text(
                           'Masuk',

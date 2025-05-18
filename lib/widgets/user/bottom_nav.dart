@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../views/user/homepage.dart';  // Path relatif ke file halaman HomePage
-import '../../views/user/mybooking.dart';  // Path relatif ke file halaman MyBookingPage
-import '../../views/user/riwayat.dart';  // Path relatif ke file halaman RiwayatPage
-import '../../views/user/profile.dart';  // Path relatif ke file halaman ProfilePage
-
+import '../../views/user/homepage.dart';  
+import '../../views/user/mybooking.dart';  
+import '../../views/user/riwayat.dart';  
+import '../../views/user/profile.dart';  
 
 class BottomNav extends StatelessWidget {
   final int currentIndex;
@@ -32,10 +31,10 @@ class BottomNav extends StatelessWidget {
         Navigator.pushReplacement(context, pageRouteBuilder(const MyBookingPage()));
         break;
       case 2:
-        Navigator.pushReplacement(context, pageRouteBuilder(const RiwayatPage()));
+        Navigator.pushReplacement(context, pageRouteBuilder( const RiwayatPage()));
         break;
       case 3:
-        Navigator.pushReplacement(context, pageRouteBuilder(const ProfilePage()));
+        Navigator.pushReplacement(context, pageRouteBuilder( ProfilePage()));
         break;
     }
   }
