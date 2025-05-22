@@ -2,19 +2,28 @@ import 'package:flutter/material.dart';
 
 class BottomNavbar extends StatelessWidget {
   final int currentIndex;
-  final Function(int) onTap;
 
   const BottomNavbar({
     super.key,
     required this.currentIndex,
-    required this.onTap,
   });
+
+  void _handleNavigation(BuildContext context, int index) {
+    if (index == currentIndex) return;
+
+    String route = '/homepage_admin';
+    if (index == 1) route = '/booking';
+    if (index == 2) route = '/laporan';
+
+    Navigator.pushReplacementNamed(context, route);
+  }
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      backgroundColor: Colors.white,  // <-- Ini biar background benar-benar putih
       currentIndex: currentIndex,
-      onTap: onTap,
+      onTap: (index) => _handleNavigation(context, index),
       selectedItemColor: Colors.blue[700],
       unselectedItemColor: Colors.grey,
       items: const [

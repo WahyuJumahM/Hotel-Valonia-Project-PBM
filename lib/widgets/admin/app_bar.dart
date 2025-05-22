@@ -1,35 +1,38 @@
-// import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
-// class CustomAppBar extends StatelessWidget {
-//   final String title;
-//   final VoidCallback onBackPressed;
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  final bool showBackButton;
+  final VoidCallback? onBack;
 
-//   const CustomAppBar({
-//     Key? key,
-//     required this.title,
-//     required this.onBackPressed,
-//   }) : super(key: key);
+  const CustomAppBar({
+    super.key,
+    required this.title,
+    this.showBackButton = false,
+    this.onBack,
+  });
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return SafeArea(
-//       child: Padding(
-//         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-//         child: Row(
-//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//           children: [
-//             GestureDetector(
-//               onTap: onBackPressed,
-//               child: const CircleAvatar(
-//                 backgroundColor: Colors.white54,
-//                 child: Icon(Icons.arrow_back, color: Colors.black),
-//               ),
-//             ),
-//             Text(title, style: const TextStyle(fontFamily: 'Roboto', fontWeight: FontWeight.bold, fontSize: 18)),
-//             const SizedBox(width: 40),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.transparent, // background transparan
+      elevation: 0, // hilangkan bayangan
+      automaticallyImplyLeading: false, // tidak otomatis buat tombol back
+      leading: showBackButton
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back_ios),
+              onPressed: onBack ?? () => Navigator.of(context).pop(),
+              color: Colors.black, // opsional: agar tombol back tetap terlihat
+            )
+          : null,
+      title: Text(
+        title,
+        style: const TextStyle(color: Colors.black), // teks tetap terlihat
+      ),
+      centerTitle: true,
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}

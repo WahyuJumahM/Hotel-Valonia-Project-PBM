@@ -54,7 +54,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
+      backgroundColor: const Color(0xFFFFFFFF), // Warna putih murni
+      // appBar: const CustomAppBar( // <--- Dihapus
+      //   title: 'Home',
+      //   showBackButton: false,
+      // ),
       body: SafeArea(
         child: Column(
           children: [
@@ -96,10 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.blue[700],
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      bottomNavigationBar: BottomNavbar(
-        currentIndex: _currentIndex,
-        onTap: _onNavTap,
-      ),
+      bottomNavigationBar: BottomNavbar(currentIndex: 0),
     );
   }
 }

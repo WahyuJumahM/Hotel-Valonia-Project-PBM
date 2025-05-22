@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../widgets/admin/app_bar.dart';
 import '../../../widgets/admin/bottom_navbar.dart';
 import '../../../widgets/admin/booking_widgets/booking_card.dart';
+import '../../../widgets/admin/search_bar.dart'; // pastikan path benar
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});
@@ -10,9 +12,8 @@ class BookingScreen extends StatefulWidget {
 }
 
 class _BookingScreenState extends State<BookingScreen> {
-  int _currentIndex = 1; // Untuk Bottom Navbar
+  int _currentIndex = 1;
 
-  // Daftar booking dengan data statis dalam bentuk Map
   List<Map<String, dynamic>> bookings = [
     {
       'name': 'Kamar Superior Twin',
@@ -37,7 +38,6 @@ class _BookingScreenState extends State<BookingScreen> {
     },
   ];
 
-  // Fungsi untuk memperbarui status booking
   void updateStatus(int index, String newStatus) {
     setState(() {
       bookings[index]['status'] = newStatus;
@@ -46,13 +46,12 @@ class _BookingScreenState extends State<BookingScreen> {
 
   void _onNavTap(int index) {
     if (index == _currentIndex) return;
-
     setState(() {
       _currentIndex = index;
     });
 
     if (index == 0) {
-      Navigator.pushReplacementNamed(context, '/');
+      Navigator.pushReplacementNamed(context, '/homepage_admin');
     } else if (index == 2) {
       Navigator.pushReplacementNamed(context, '/laporan');
     }
@@ -61,70 +60,18 @@ class _BookingScreenState extends State<BookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Booking')),
-      bottomNavigationBar: BottomNavbar(
-        currentIndex: _currentIndex,
-        onTap: _onNavTap,
+      backgroundColor: const Color(0xFFFFFFFF), // background putih murni
+      appBar: CustomAppBar(
+        title: 'Booking',
+        showBackButton: true,
+        onBack: () => Navigator.pushReplacementNamed(context, '/homepage_admin'),
       ),
+      bottomNavigationBar: BottomNavbar(currentIndex: _currentIndex),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // AppBar (untuk navigasi kembali)
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pushReplacementNamed(context, '/'),
-                    child: const Icon(Icons.arrow_back_ios, size: 20),
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Booking',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-
-            // Search Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Row(
-                  children: [
-                    const SizedBox(width: 16),
-                    const Icon(Icons.search, color: Colors.grey),
-                    const SizedBox(width: 8),
-                    const Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: 'Search...',
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(right: 8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.tune, size: 20),
-                        onPressed: () {},
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            const CustomSearchBar(),
             const SizedBox(height: 16),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
@@ -143,8 +90,6 @@ class _BookingScreenState extends State<BookingScreen> {
               ),
             ),
             const SizedBox(height: 12),
-
-            // Daftar booking
             Expanded(
               child: ListView.builder(
                 itemCount: bookings.length,

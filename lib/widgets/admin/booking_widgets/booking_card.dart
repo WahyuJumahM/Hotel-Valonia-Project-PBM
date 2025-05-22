@@ -33,6 +33,14 @@ class BookingCard extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Colors.grey.shade200),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
           child: Column(
             children: [
@@ -45,7 +53,7 @@ class BookingCard extends StatelessWidget {
                       bottomLeft: Radius.circular(16),
                     ),
                     child: Image.asset(
-                      booking['image'] ?? 'assets/images/room.jpg', // Gambar statis
+                      booking['image'] ?? 'assets/images/room.jpg',
                       height: 100,
                       width: 100,
                       fit: BoxFit.cover,
@@ -58,13 +66,13 @@ class BookingCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            booking['name'] ?? 'Kamar Tidak Ditemukan', // Nama statis
+                            booking['name'] ?? 'Kamar Tidak Ditemukan',
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              StatusBadge(status: booking['status'] ?? 'Menunggu'), // Status statis
+                              StatusBadge(status: booking['status'] ?? 'Menunggu'),
                               if (booking['status'] == 'Berlangsung' || booking['status'] == 'Selesai') ...[
                                 const SizedBox(width: 6),
                                 const StatusBadge(status: 'Disetujui'),
@@ -89,7 +97,7 @@ class BookingCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                'Tanggal ${booking['date'] ?? 'Tidak Tersedia'}', // Tanggal statis
+                                'Tanggal ${booking['date'] ?? 'Tidak Tersedia'}',
                                 style: const TextStyle(fontSize: 13),
                               ),
                             ],
@@ -100,14 +108,14 @@ class BookingCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (booking['status'] == 'Menunggu') // Cek status dan tampilkan tombol sesuai status
+              if (booking['status'] == 'Menunggu')
                 Padding(
                   padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                   child: Row(
                     children: [
                       Expanded(
                         child: ElevatedButton.icon(
-                          onPressed: () => onUpdateStatus(index, 'Berlangsung'), // Update status
+                          onPressed: () => onUpdateStatus(index, 'Berlangsung'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
                             shape: RoundedRectangleBorder(
@@ -128,7 +136,7 @@ class BookingCard extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton.icon(
-                          onPressed: () => onUpdateStatus(index, 'Dibatalkan'), // Update status
+                          onPressed: () => onUpdateStatus(index, 'Dibatalkan'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                             shape: RoundedRectangleBorder(
