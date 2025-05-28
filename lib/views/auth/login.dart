@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'register.dart';
-import 'login_admin.dart';
-// import '../app_routes.dart'; // Import AppRoutes
+import 'kebijakan_privasi.dart'; // import halaman kebijakan_privasi
 
 class LoginPage extends StatefulWidget {
   @override
@@ -103,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                           // Setelah login berhasil, arahkan ke homepage
                           Navigator.pushReplacementNamed(
                             context,
-                            '/homepage', // Mengarahkan ke halaman homepage menggunakan nama rute
+                            '/homepage', // pastikan route ini sudah ada di main.dart
                           );
                         },
                         child: Text(
@@ -146,26 +145,6 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 12),
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => LoginAdminPage()),
-                          );
-                        },
-                        child: Text(
-                          "Admin",
-                          style: TextStyle(
-                            fontFamily: 'Roboto',
-                            color: Colors.redAccent,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ),
                     Spacer(),
                     Center(
                       child: Text.rich(
@@ -173,12 +152,23 @@ class _LoginPageState extends State<LoginPage> {
                           text: "Dengan mendaftar, Anda setuju dengan ",
                           style: TextStyle(fontSize: 12, color: Colors.black54, fontFamily: 'Roboto'),
                           children: [
-                            TextSpan(
-                              text: "Syarat & Ketentuan",
-                              style: TextStyle(
-                                fontFamily: 'Roboto',
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
+                            WidgetSpan(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => KebijakanPrivasiPage()),
+                                  );
+                                },
+                                child: Text(
+                                  "Syarat & Ketentuan",
+                                  style: TextStyle(
+                                    fontFamily: 'Roboto',
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
                               ),
                             ),
                             TextSpan(text: " kami."),

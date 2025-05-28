@@ -8,27 +8,35 @@ class MyBookingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: false,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: AppBar(
           automaticallyImplyLeading: false,
+          backgroundColor: Colors.white,
+          elevation: 0,
+          surfaceTintColor: Colors.white, // Biar nggak berubah pas discroll
           title: const Padding(
-            padding: EdgeInsets.only(top: 20), 
+            padding: EdgeInsets.only(top: 20),
             child: Text(
               "Booking Saya",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Roboto',
                 fontSize: 20,
+                color: Color.fromARGB(255, 0, 0, 0),
               ),
             ),
           ),
           centerTitle: true,
         ),
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: ListRoomBooking(),
+      body: Container(
+        color: Colors.white,
+        child: const Padding(
+          padding: EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+          child: ListRoomBooking(),
+        ),
       ),
       bottomNavigationBar: const BottomNav(currentIndex: 1),
     );

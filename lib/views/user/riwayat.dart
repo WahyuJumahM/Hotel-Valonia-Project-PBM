@@ -8,12 +8,15 @@ class RiwayatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,  // background scaffold putih
+      extendBodyBehindAppBar: false,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: const Color.fromRGBO(254, 247, 255, 0.886),
+          backgroundColor: Colors.white,  // appbar putih sama dengan scaffold
           elevation: 0,
+          surfaceTintColor: Colors.white,  // agar tidak berubah warna saat discroll
           title: const Padding(
             padding: EdgeInsets.only(top: 20),
             child: Text(
@@ -31,13 +34,7 @@ class RiwayatPage extends StatelessWidget {
       ),
       body: const Padding(
         padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            SearchBarWidget(),
-            SizedBox(height: 16),
-            Expanded(child: ListRoomRiwayat()),
-          ],
-        ),
+        child: ListRoomRiwayat(),
       ),
       bottomNavigationBar: const BottomNav(currentIndex: 2),
     );

@@ -40,14 +40,7 @@ class RekomendasiItem extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Positioned(
-            top: 8,
-            right: 8,
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Icon(Icons.favorite_border, color: Colors.red),
-            ),
-          ),
+          // CircleAvatar sudah dihapus di sini
           Positioned(
             bottom: 12,
             left: 12,

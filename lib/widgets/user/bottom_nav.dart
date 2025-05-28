@@ -31,28 +31,47 @@ class BottomNav extends StatelessWidget {
         Navigator.pushReplacement(context, pageRouteBuilder(const MyBookingPage()));
         break;
       case 2:
-        Navigator.pushReplacement(context, pageRouteBuilder( const RiwayatPage()));
+        Navigator.pushReplacement(context, pageRouteBuilder(const RiwayatPage()));
         break;
       case 3:
-        Navigator.pushReplacement(context, pageRouteBuilder( ProfilePage()));
+        Navigator.pushReplacement(context, pageRouteBuilder(ProfilePage()));
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      onTap: (index) => _onTap(context, index),
-      selectedItemColor: Colors.blue,
-      unselectedItemColor: Colors.grey,
-      type: BottomNavigationBarType.fixed,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.book), label: 'My Booking'),
-        BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(20),   // rounded atas kiri
+        topRight: Radius.circular(20),  // rounded atas kanan
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [                        // shadow tipis di atas navigation bar
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: (index) => _onTap(context, index),
+          selectedItemColor: Colors.blue,
+          unselectedItemColor: Colors.grey,
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.book), label: 'My Booking'),
+            BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          ],
+        ),
+      ),
     );
   }
 }

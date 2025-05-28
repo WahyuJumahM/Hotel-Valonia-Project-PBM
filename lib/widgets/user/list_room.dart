@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '/views/user/detail_kamar.dart'; // ganti dengan nama project kamu
 
 class ListRoom extends StatelessWidget {
   const ListRoom({super.key});
@@ -8,81 +9,39 @@ class ListRoom extends StatelessWidget {
     final rooms = [
       {
         "image": "assets/images/room-view1.png",
-        "name": "Kamar Superior Twin",
+        "name": "Superior Twin",
         "price": "Rp.1.433.270",
-        "rating": 4.0
       },
       {
         "image": "assets/images/room-view2.png",
-        "name": "Kamar Immortal Twin",
+        "name": "Immortal Twin",
         "price": "Rp.1.433.270",
-        "rating": 3.8
       },
       {
         "image": "assets/images/room-view1.png",
-        "name": "Kamar Glory Twin",
+        "name": "Glory Twin",
         "price": "Rp.1.433.270",
-        "rating": 3.9
       },
       {
         "image": "assets/images/room-view1.png",
-        "name": "Kamar Superior Twin",
+        "name": "Superior Twin",
         "price": "Rp.1.433.270",
-        "rating": 4.0
       },
       {
         "image": "assets/images/room-view2.png",
-        "name": "Kamar Immortal Twin",
+        "name": "Immortal Twin",
         "price": "Rp.1.433.270",
-        "rating": 3.8
       },
       {
         "image": "assets/images/room-view1.png",
-        "name": "Kamar Glory Twin",
+        "name": "Glory Twin",
         "price": "Rp.1.433.270",
-        "rating": 3.9
-      },
-      {
-        "image": "assets/images/room-view1.png",
-        "name": "Kamar Superior Twin",
-        "price": "Rp.1.433.270",
-        "rating": 4.0
-      },
-      {
-        "image": "assets/images/room-view2.png",
-        "name": "Kamar Immortal Twin",
-        "price": "Rp.1.433.270",
-        "rating": 3.8
-      },
-      {
-        "image": "assets/images/room-view1.png",
-        "name": "Kamar Glory Twin",
-        "price": "Rp.1.433.270",
-        "rating": 3.9
-      },
-      {
-        "image": "assets/images/room-view1.png",
-        "name": "Kamar Superior Twin",
-        "price": "Rp.1.433.270",
-        "rating": 4.0
-      },
-      {
-        "image": "assets/images/room-view2.png",
-        "name": "Kamar Immortal Twin",
-        "price": "Rp.1.433.270",
-        "rating": 3.8
-      },
-      {
-        "image": "assets/images/room-view1.png",
-        "name": "Kamar Glory Twin",
-        "price": "Rp.1.433.270",
-        "rating": 3.9
       },
     ];
 
     return ListView.builder(
       shrinkWrap: true,
-      physics: const BouncingScrollPhysics(), // biar bisa discroll
+      physics: const BouncingScrollPhysics(),
       itemCount: rooms.length,
       itemBuilder: (context, index) {
         final room = rooms[index];
@@ -91,22 +50,20 @@ class ListRoom extends StatelessWidget {
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.asset(
-              room['image'] as String,
+              room['image']!,
               width: 60,
               height: 60,
               fit: BoxFit.cover,
             ),
           ),
-          title: Text(room['name'] as String),
+          title: Text(room['name']!),
           subtitle: Text('${room['price']}/malam'),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.star, color: Colors.amber, size: 18),
-              const SizedBox(width: 4),
-              Text(room['rating'].toString()),
-            ],
-          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const DetailKamar()),
+            );
+          },
         );
       },
     );
