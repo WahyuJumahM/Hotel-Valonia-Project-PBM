@@ -47,7 +47,9 @@ class TopBar extends StatelessWidget {
             ),
             child: IconButton(
               icon: const Icon(Icons.logout, size: 20, color: Colors.red),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/login_admin');
+              },
             ),
           ),
         ],

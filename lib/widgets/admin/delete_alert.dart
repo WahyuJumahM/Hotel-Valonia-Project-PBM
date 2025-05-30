@@ -167,7 +167,7 @@ class DetailScreen extends StatelessWidget {
                           return DeleteRoomDialog(
                             room: kamar,
                             onDelete: () {
-                              // TODO: Tambahkan logika hapus dari database di sini
+                              // TODO: Ganti dengan logika penghapusan sesungguhnya
                               print('Kamar telah dihapus');
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -175,7 +175,7 @@ class DetailScreen extends StatelessWidget {
                                   backgroundColor: Colors.red,
                                 ),
                               );
-                              Navigator.pop(context); // Kembali dari Detail
+                              Navigator.pop(context); // Keluar dari halaman detail
                             },
                           );
                         },

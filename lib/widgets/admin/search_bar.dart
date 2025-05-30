@@ -9,7 +9,7 @@ class CustomSearchBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          color: Colors.transparent, // Membuat background transparan
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: Colors.grey.shade300),
         ),

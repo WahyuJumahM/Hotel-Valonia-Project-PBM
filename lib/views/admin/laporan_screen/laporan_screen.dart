@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../widgets/admin/bottom_navbar.dart';
+import '../../../widgets/admin/app_bar.dart'; // pastikan path sesuai
 
 class LaporanPage extends StatefulWidget {
   const LaporanPage({super.key});
@@ -9,44 +10,24 @@ class LaporanPage extends StatefulWidget {
 }
 
 class _LaporanPageState extends State<LaporanPage> {
-  int _currentIndex = 2;
-
-  void _onNavTap(int index) {
-    if (index == _currentIndex) return;
-
-    setState(() {
-      _currentIndex = index;
-    });
-
-    // Navigasi ke halaman lain
-    if (index == 0) {
-      Navigator.pushReplacementNamed(context, '/');
-    } else if (index == 1) {
-      Navigator.pushReplacementNamed(context, '/booking');
-    }
-  }
+  final int _currentIndex = 2;
+  final List<String> years = ['2024', '2025', '2026', '2027', '2028', '2029'];
+  String selectedYear = '2025';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavbar(
-        currentIndex: _currentIndex,
-        onTap: _onNavTap,
+      backgroundColor: const Color(0xFFFFFFFF), // background putih murni
+      bottomNavigationBar: BottomNavbar(currentIndex: _currentIndex),
+
+      appBar: CustomAppBar(
+        title: 'Laporan',
+        showBackButton: true,
+        onBack: () {
+          Navigator.pushReplacementNamed(context, '/homepage_admin');
+        },
       ),
-      appBar: AppBar(
-        title: const Text(
-          'Laporan',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        actions: const [Icon(Icons.more_vert)],
-      ),
+
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -55,21 +36,38 @@ class _LaporanPageState extends State<LaporanPage> {
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              itemCount: 6,
+              itemCount: years.length,
               itemBuilder: (context, index) {
-                final years = ['2024', '2025', '2026', '2027', '2028', '2029'];
-                final selected = years[index] == '2025';
+                final year = years[index];
+                final selected = year == selectedYear;
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   child: ChoiceChip(
-                    label: Text(years[index]),
+                    label: Text(
+                      year,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
                     selected: selected,
-                    selectedColor: Colors.grey.shade300,
+                    backgroundColor: Colors.white,
+                    selectedColor: Colors.white,
+                    side: BorderSide(
+                      color: selected ? Colors.blue : Colors.grey.shade400,
+                      width: selected ? 2 : 1,
+                    ),
+                    onSelected: (bool value) {
+                      setState(() {
+                        if (value) selectedYear = year;
+                      });
+                    },
                   ),
                 );
               },
             ),
           ),
+
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
@@ -136,6 +134,7 @@ class _LaporanPageState extends State<LaporanPage> {
               ),
             ),
           ),
+
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -149,6 +148,7 @@ class _LaporanPageState extends State<LaporanPage> {
               ],
             ),
           ),
+
           Expanded(
             child: GridView.builder(
               padding: const EdgeInsets.all(16),
@@ -159,33 +159,32 @@ class _LaporanPageState extends State<LaporanPage> {
                 crossAxisSpacing: 12,
                 childAspectRatio: 2,
               ),
-              itemBuilder:
-                  (context, index) => Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '150',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Superior Twin',
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                        ],
+              itemBuilder: (context, index) => Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '150',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
                       ),
-                    ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Superior Twin',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ],
                   ),
+                ),
+              ),
             ),
           ),
         ],

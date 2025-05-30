@@ -1,26 +1,19 @@
 import 'package:flutter/material.dart';
+import '../../../widgets/admin/app_bar.dart'; // Ganti dengan path sebenarnya
 
 class DetailBookingScreen extends StatelessWidget {
-  const DetailBookingScreen({super.key, required Map<String, dynamic> booking});
+  final Map<String, dynamic> booking;
+
+  const DetailBookingScreen({super.key, required this.booking});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        leading: const BackButton(color: Colors.black),
-        title: const Text(
-          'Detail Booking',
-          style: TextStyle(
-            fontFamily: 'Roboto',
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
+      appBar: CustomAppBar(
+        title: 'Detail Booking',
+        showBackButton: true,
+        onBack: () => Navigator.of(context).pop(),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -60,7 +53,11 @@ class DetailBookingScreen extends StatelessWidget {
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            _buildStatusTag('Menunggu', const Color(0xFFDCFCE7), textColor: Color(0xFF15803D)), // Status statis
+                            _buildStatusTag(
+                              'Menunggu',
+                              const Color(0xFFDCFCE7),
+                              textColor: const Color(0xFF15803D),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 6),
@@ -148,38 +145,6 @@ class DetailBookingScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                // children: [
-                //   Expanded(
-                //     child: ElevatedButton(
-                //       onPressed: () {},
-                //       style: ElevatedButton.styleFrom(
-                //         primary: Colors.blue,
-                //         shape: RoundedRectangleBorder(
-                //           borderRadius: BorderRadius.circular(8),
-                //         ),
-                //       ),
-                //       child: const Text('Disetujui'),
-                //     ),
-                //   ),
-                //   const SizedBox(width: 12),
-                //   Expanded(
-                //     child: ElevatedButton(
-                //       onPressed: () {},
-                //       style: ElevatedButton.styleFrom(
-                //         primary: Colors.red,
-                //         shape: RoundedRectangleBorder(
-                //           borderRadius: BorderRadius.circular(8),
-                //         ),
-                //       ),
-                //       child: const Text('Dibatalkan'),
-                //     ),
-                //   ),
-                // ],
-              ),
-            ),
           ],
         ),
       ),
