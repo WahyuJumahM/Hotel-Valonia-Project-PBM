@@ -14,9 +14,8 @@ class RiwayatPage extends StatelessWidget {
         preferredSize: const Size.fromHeight(70),
         child: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,  // appbar putih sama dengan scaffold
+          backgroundColor: Colors.blue[700],  // appbar putih sama dengan scaffold
           elevation: 0,
-          surfaceTintColor: Colors.white,  // agar tidak berubah warna saat discroll
           title: const Padding(
             padding: EdgeInsets.only(top: 20),
             child: Text(
@@ -25,7 +24,7 @@ class RiwayatPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Roboto',
                 fontSize: 20,
-                color: Colors.black,
+                color: Colors.white,
               ),
             ),
           ),

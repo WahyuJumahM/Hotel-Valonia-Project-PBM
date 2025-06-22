@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'lokasi.dart';
+import '../../viewmodels/admin/admin_profile_viewmodel.dart'; // Sesuaikan path dengan struktur project Anda
 
-class BantuanPage extends StatelessWidget {
+class BantuanPage extends StatefulWidget {
   const BantuanPage({super.key});
 
+  @override
+  State<BantuanPage> createState() => _BantuanPageState();
+}
+
+class _BantuanPageState extends State<BantuanPage> {
   static const Color _primaryColor = Colors.blue;
   static const Color _backgroundColor = Color(0xFFF8F9FA);
   static const Color _cardColor = Colors.white;
@@ -12,23 +19,42 @@ class BantuanPage extends StatelessWidget {
   static const double _spacing = 20.0;
 
   @override
+  void initState() {
+    super.initState();
+    // Load admin profile saat halaman dibuka
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final viewModel = Provider.of<AdminProfileViewModel>(
+        context,
+        listen: false,
+      );
+      if (viewModel.adminProfile == null) {
+        viewModel.loadAdminProfile();
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _backgroundColor,
       appBar: _buildAppBar(context),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(_spacing),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildWelcomeCard(),
-              const SizedBox(height: _spacing),
-              _buildContactSection(context),
-              const SizedBox(height: _spacing),
-              _buildFAQSection(context),
-            ],
-          ),
+        child: Consumer<AdminProfileViewModel>(
+          builder: (context, viewModel, child) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(_spacing),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildWelcomeCard(),
+                  const SizedBox(height: _spacing),
+                  _buildContactSection(context, viewModel),
+                  const SizedBox(height: _spacing),
+                  _buildFAQSection(context),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
@@ -126,7 +152,10 @@ class BantuanPage extends StatelessWidget {
     );
   }
 
-  Widget _buildContactSection(BuildContext context) {
+  Widget _buildContactSection(
+    BuildContext context,
+    AdminProfileViewModel viewModel,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -145,18 +174,30 @@ class BantuanPage extends StatelessWidget {
           icon: Icons.email_outlined,
           iconColor: Colors.red,
           title: 'Email Customer Service',
-          subtitle: 'AdminHotel@gmail.com',
+          subtitle:
+              viewModel.isLoading
+                  ? 'Memuat...'
+                  : (viewModel.adminEmail.isNotEmpty
+                      ? viewModel.adminEmail
+                      : 'AdminHotel@gmail.com'), // Fallback jika kosong
           description: 'Kirim email untuk pertanyaan detail',
-          onTap: () => _showEmailDialog(context),
+          onTap: () => _showEmailDialog(context, viewModel),
+          isLoading: viewModel.isLoading,
         ),
         const SizedBox(height: 12),
         _buildContactCard(
           icon: Icons.phone_outlined,
           iconColor: Colors.green,
-          title: 'Telepon Admin',
-          subtitle: '+62 1232 3847 213',
+          title: 'Kontak Kami',
+          subtitle:
+              viewModel.isLoading
+                  ? 'Memuat...'
+                  : (viewModel.adminPhone.isNotEmpty
+                      ? viewModel.adminPhone
+                      : '+62 1232 3847 213'), // Fallback jika kosong
           description: 'Hubungi langsung untuk bantuan cepat',
-          onTap: () => _showPhoneDialog(context),
+          onTap: () => _showPhoneDialog(context, viewModel),
+          isLoading: viewModel.isLoading,
         ),
         const SizedBox(height: 12),
         _buildContactCard(
@@ -185,10 +226,11 @@ class BantuanPage extends StatelessWidget {
     required String description,
     required VoidCallback onTap,
     bool showArrow = false,
+    bool isLoading = false,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(_borderRadius),
         boxShadow: [
           BoxShadow(
@@ -201,7 +243,7 @@ class BantuanPage extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
+          onTap: isLoading ? null : onTap, // Disable tap saat loading
           borderRadius: BorderRadius.circular(_borderRadius),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -213,34 +255,58 @@ class BantuanPage extends StatelessWidget {
                     color: iconColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: iconColor, size: 24),
+                  child:
+                      isLoading &&
+                              (title.contains('Email') ||
+                                  title.contains('Telepon'))
+                          ? SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                iconColor,
+                              ),
+                            ),
+                          )
+                          : Icon(icon, color: iconColor, size: 24),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.black87)),
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.black87,
+                        ),
+                      ),
                       const SizedBox(height: 4),
-                      Text(subtitle,
-                          style: TextStyle(
-                              color: iconColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          color: isLoading ? Colors.grey : iconColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                       const SizedBox(height: 2),
-                      Text(description,
-                          style: TextStyle(
-                              color: Colors.grey[600], fontSize: 12)),
+                      Text(
+                        description,
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      ),
                     ],
                   ),
                 ),
                 if (showArrow)
-                  Icon(Icons.arrow_forward_ios,
-                      color: Colors.grey[400], size: 16),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.grey[400],
+                    size: 16,
+                  ),
               ],
             ),
           ),
@@ -276,47 +342,131 @@ class BantuanPage extends StatelessWidget {
     );
   }
 
-  void _showEmailDialog(BuildContext context) {
-    _showInfoDialog(context, 'Email Customer Service',
-        'AdminHotel@gmail.com', 'Email telah disalin ke clipboard');
+  void _showEmailDialog(BuildContext context, AdminProfileViewModel viewModel) {
+    final email =
+        viewModel.adminEmail.isNotEmpty
+            ? viewModel.adminEmail
+            : 'AdminHotel@gmail.com';
+
+    _showInfoDialog(
+      context,
+      'Email Customer Service',
+      email,
+      'Email telah disalin ke clipboard',
+    );
   }
 
-  void _showPhoneDialog(BuildContext context) {
-    _showInfoDialog(context, 'Telepon Admin', '+62 1232 3847 213',
-        'Nomor telepon telah disalin ke clipboard');
+  void _showPhoneDialog(BuildContext context, AdminProfileViewModel viewModel) {
+    final phone =
+        viewModel.adminPhone.isNotEmpty
+            ? viewModel.adminPhone
+            : '+62 1232 3847 213';
+
+    _showInfoDialog(
+      context,
+      'Telepon Admin',
+      phone,
+      'Nomor telepon telah disalin ke clipboard',
+    );
   }
 
   void _showInfoDialog(
-      BuildContext context, String title, String content, String message) {
+    BuildContext context,
+    String title,
+    String content,
+    String message,
+  ) {
     Clipboard.setData(ClipboardData(text: content));
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            child: const Text('Tutup'),
-            onPressed: () => Navigator.pop(context),
+      builder:
+          (_) => AlertDialog(
+            backgroundColor: Colors.white, // Menambahkan warna putih pada card
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.black87, // Memastikan text berwarna gelap
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  content,
+                  style: TextStyle(
+                    color: _primaryColor,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  message,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: _primaryColor,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                ),
+                child: const Text('Tutup'),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   void _showComingSoonDialog(BuildContext context, String feature) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(feature),
-        content: const Text('Fitur ini akan segera tersedia.'),
-        actions: [
-          TextButton(
-            child: const Text('Tutup'),
-            onPressed: () => Navigator.pop(context),
+      builder:
+          (_) => AlertDialog(
+            backgroundColor: Colors.white, // Menambahkan warna putih pada card
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text(
+              feature,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.black87, // Memastikan text berwarna gelap
+              ),
+            ),
+            content: const Text(
+              'Fitur ini akan segera tersedia.',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black87, // Memastikan text berwarna gelap
+              ),
+            ),
+            actions: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: _primaryColor,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                ),
+                child: const Text('Tutup'),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }

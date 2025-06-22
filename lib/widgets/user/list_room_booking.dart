@@ -1,29 +1,42 @@
+// lib/widgets/user/list_room_booking.dart
 import 'package:flutter/material.dart';
-import '/widgets/user/popup_detail.dart';  // import popup detail yang sudah kamu buat
+import 'package:provider/provider.dart';
+import 'popup_detail_booking.dart';
+import '../../viewmodels/user/mybooking_riwayat_viewmodel.dart';
+import '../../models/user/mybooking.dart';
 
-class ListRoomBooking extends StatelessWidget {
+class ListRoomBooking extends StatefulWidget {
   const ListRoomBooking({super.key});
 
-  void showBookingDetailDialog(BuildContext context) {
+  @override
+  State<ListRoomBooking> createState() => _ListRoomBookingState();
+}
+
+class _ListRoomBookingState extends State<ListRoomBooking> {
+  @override
+  void initState() {
+    super.initState();
+    // Load data booking saat widget pertama kali dibuat
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<BookingViewModel>().loadBookings();
+    });
+  }
+
+  void showBookingDetailDialog(BuildContext context, Booking booking) {
     showDialog(
       context: context,
-      builder: (context) => const BookingDetailPopup(),
+      builder: (context) => BookingDetailPopup(booking: booking),
     );
   }
 
-
   Widget bookingCard({
     required BuildContext context,
-    required String imageUrl,
-    required String status,
-    required Color statusColor,
-    required String roomName,
-    required String price,
-    required String dateRange,
-    required String guestInfo,
+    required Booking booking,
   }) {
+    final viewModel = context.read<BookingViewModel>();
+    
     return GestureDetector(
-      onTap: () => showBookingDetailDialog(context),
+      onTap: () => showBookingDetailDialog(context, booking),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 2,
@@ -47,11 +60,40 @@ class ListRoomBooking extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    imageUrl,
+                  child: Image.network(
+                    booking.fotoKamar,
                     width: 100,
                     height: 100,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.image_not_supported,
+                          color: Colors.grey,
+                          size: 40,
+                        ),
+                      );
+                    },
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -62,24 +104,24 @@ class ListRoomBooking extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: statusColor,
+                          color: viewModel.getStatusColor(booking.namaStatus),
                           borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
-                              color: statusColor.withOpacity(0.3),
+                              color: viewModel.getStatusColor(booking.namaStatus).withOpacity(0.3),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
                           ],
                         ),
                         child: Text(
-                          status,
+                          booking.namaStatus,
                           style: const TextStyle(color: Colors.white, fontSize: 12),
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        roomName,
+                        booking.namaKamar,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -87,7 +129,7 @@ class ListRoomBooking extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        price,
+                        '${viewModel.formatCurrency(booking.harga)} /malam',
                         style: const TextStyle(
                           fontSize: 14,
                           color: Color(0xFF34495E),
@@ -99,7 +141,7 @@ class ListRoomBooking extends StatelessWidget {
                           const Icon(Icons.calendar_today, size: 16, color: Color(0xFF7F8C8D)),
                           const SizedBox(width: 6),
                           Text(
-                            dateRange,
+                            viewModel.formatDateRange(booking.cekIn, booking.cekOut),
                             style: const TextStyle(fontSize: 12, color: Color(0xFF7F8C8D)),
                           ),
                         ],
@@ -110,7 +152,7 @@ class ListRoomBooking extends StatelessWidget {
                           const Icon(Icons.person, size: 16, color: Color(0xFF7F8C8D)),
                           const SizedBox(width: 6),
                           Text(
-                            guestInfo,
+                            viewModel.getGuestInfo(booking.tipeKasur, booking.kapasitas),
                             style: const TextStyle(fontSize: 12, color: Color(0xFF7F8C8D)),
                           ),
                         ],
@@ -128,29 +170,111 @@ class ListRoomBooking extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        bookingCard(
-          context: context,
-          imageUrl: 'assets/images/hotel.jpg',
-          status: 'Menunggu',
-          statusColor: Colors.orange,
-          roomName: 'Kamar 101',
-          price: 'Rp1,433,270 /malam',
-          dateRange: '12 – 14 Nov 2024',
-          guestInfo: 'Single bed - 2 orang',
-        ),
-        bookingCard(
-          context: context,
-          imageUrl: 'assets/images/hotel.jpg',
-          status: 'Konfirmasi',
-          statusColor: const Color.fromARGB(255, 38, 61, 189),
-          roomName: 'Kamar 101',
-          price: 'Rp1,433,270 /malam',
-          dateRange: '12 – 14 Nov 2024',
-          guestInfo: 'Single bed - 2 orang',
-        ),
-      ],
+    return Consumer<BookingViewModel>(
+      builder: (context, viewModel, child) {
+        if (viewModel.isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (viewModel.errorMessage.isNotEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Colors.red.shade300,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Terjadi Kesalahan',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(
+                    viewModel.errorMessage,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    viewModel.clearError();
+                    viewModel.loadBookings();
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Coba Lagi'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (viewModel.bookings.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.roofing,
+                  size: 64,
+                  color: Colors.grey.shade400,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Belum Ada Booking',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Booking kamar Anda akan muncul di sini',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () => viewModel.refreshBookings(),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Refresh'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () => viewModel.refreshBookings(),
+          child: ListView.builder(
+            itemCount: viewModel.bookings.length,
+            itemBuilder: (context, index) {
+              final booking = viewModel.bookings[index];
+              return bookingCard(
+                context: context,
+                booking: booking,
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
